@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.life.game.dao.TaskDao">
+
+    <resultMap id="BaseResultMap" type="com.life.game.model.Task">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="task_name" jdbcType="VARCHAR" property="taskName" />
+        <result column="create_date" jdbcType="DATE" property="createDate" />
+        <result column="save_path" jdbcType="VARCHAR" property="savePath" />
+        <result column="task_desc" jdbcType="VARCHAR" property="taskDesc" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, task_name , create_date , task_desc
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from task
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from task
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.life.game.model.Task">
+        insert into task (task_name, create_date,
+            task_desc)
+        values (#{taskName,jdbcType=VARCHAR}, sysdate,
+                #{taskDesc,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.life.game.model.Task">
+        insert into task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="taskName != null">
+                task_name,
+            </if>
+            <if test="taskDesc != null">
+                task_desc,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="taskName != null">
+                #{taskName,jdbcType=VARCHAR},
+            </if>
+            <if test="taskDesc != null">
+                #{taskDesc,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.life.game.model.Task">
+        update task
+        <set>
+            <if test="taskName != null">
+                task_name = #{taskName,jdbcType=VARCHAR},
+            </if>
+            <if test="desc != null">
+                task_desc = #{desc,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.life.game.model.Task">
+        update task
+        set task_name = #{taskName,jdbcType=VARCHAR},
+            task_desc = #{taskDesc,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="queryParamsByPage" parameterType="com.life.game.model.Task" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from task
+        where 1=1
+        <if test="queryParams.taskName != null and queryParams.taskName != ''">
+            and task_name LIKE CONCAT('%',#{queryParams.taskName},'%')
+        </if>
+        <if test="queryParams.taskDesc != null and queryParams.taskDesc != ''">
+            and task_desc LIKE CONCAT('%',#{queryParams.taskDesc},'%')
+        </if>
+        limit #{startNum}, #{pageSize}
+    </select>
+
+    <select id="countParams" parameterType="com.life.game.model.Task" resultType="int">
+        select count(*) from task
+        where 1=1
+        <if test="queryParams.taskName != null and queryParams.taskName != ''">
+            and task_name LIKE CONCAT('%',#{queryParams.taskName},'%')
+        </if>
+        <if test="queryParams.taskDesc != null and queryParams.taskDesc != ''">
+            and task_desc LIKE CONCAT('%',#{queryParams.taskDesc},'%')
+        </if>
+    </select>
+
+    <select id="selectByTaskName" parameterType="string" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from task
+        where task_name = #{taskName} order by id asc
+    </select>
+</mapper>
+

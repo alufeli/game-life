@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+    <appenders>
+        <console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="INFO" onMatch="ACCEPT"
+                             onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8" pattern="[%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n"/>
+        </console>
+
+        <RollingFile name="RollingFileInfo" fileName="log/info.log"
+                     filePattern="log/info.%i.log">
+            <Filters>
+                <ThresholdFilter level="INFO"/>
+            </Filters>
+            <PatternLayout charset="UTF-8" pattern="[%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+
+        <RollingFile name="RollingFileError" fileName="log/error.log"
+                     filePattern="log/error_%d{yyyy-MM-dd}_%i.log">
+            <ThresholdFilter level="ERROR"/>
+            <PatternLayout charset="UTF-8" pattern="[%-5p] %d{yyyy-MM-dd HH:mm:ss,SSS} method:%l%n%m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="50 MB"/>
+            </Policies>
+        </RollingFile>
+    </appenders>
+
+    <Loggers>
+        <logger name="org.springframework" level="error"/>
+        <logger name="com.mchange.v2" level="debug"/>
+        <root level="info">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileError"/>
+        </root>
+    </Loggers>
+</Configuration>

@@ -1,0 +1,99 @@
+#################### 开发环境配置 ###############################
+#################### 服务配置##################################
+server:
+  port: 9012
+  context-path: /${spring.application.name}
+
+#################### actuator 端点配置 使得服务端点与监控端点分离####################################
+management:
+  port: 6012
+  context-path: /
+  security:
+    enabled: false
+
+################### DataSource Configuration ##########################
+#spring 在引入jdbc后，就默认开启了数据库连接池，所以可以不配置
+spring:
+  datasource: #数据源配置
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/springboot?useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: test
+    password: 000000
+    tomcat:
+      max-idle: 10 #最大的空闲连接数量
+      max-wait: 10000 # 最大建立连接等待时间。如果超过此时间将接到异常。设为-1表示无限制。
+      min-idle: 3 # 必须保持连接的最小数
+      initial-size: 3 #启动连接池时，初始建立的连接数量
+      validation-query: SELECT 1
+      test-on-borrow: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000 # 1分钟检查一次：空闲连接检查、废弃连接清理、空闲连接池大小调整之间的操作时间间隔
+      jdbc-interceptors: ConnectionState;SlowQueryReport(threshold=0)
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+  # Elasticsearch配置
+  data:
+    elasticsearch:
+      cluster-name: elk_cluster
+      cluster-nodes: 192.168.1.10:9300
+
+  #redis
+  redis:
+    database: 0
+    host: 172.31.19.222
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password:
+    # 连接池最大连接数（使用负值表示没有限制）
+    pool.max-active: 8
+    # 连接池最大阻塞等待时间（使用负值表示没有限制）
+    pool.max-wait: -1
+    # 连接池中的最大空闲连接
+    pool.max-idle: 8
+    # 连接池中的最小空闲连接
+    pool.min-idle: 0
+    # 连接超时时间（毫秒）
+    timeout: 0
+
+  #kafka消费
+  kafka:
+    bootstrap-servers: 192.168.1.10:6667
+    consumer:
+      group-id: test
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-commit-interval: 1000
+      enable-auto-commit: true
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-serializer: org.apache.kafka.common.serialization.StringDeserializer
+
+
+
+
+# 示例任务调度时间配置
+quartz:
+  cron: 0/10 * * * * ?
+
+#数据库连接池监控页面用户密码
+druid:
+  monitor:
+    userName: admin
+    userPWD: 123456
+
+#线程池
+thread:
+  config:
+    coreSize: 10
+    maxSize: 20
+    keepAliveSeconds: 1000
+
+#log4j2
+logging:
+  config: classpath:log4j2-dev.xml
+
